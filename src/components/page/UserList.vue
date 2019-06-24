@@ -1,13 +1,16 @@
 <template>
     <div class="table">
         <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades" ></i> 基础表格</el-breadcrumb-item>
-            </el-breadcrumb>
+            <el-header style="text-align: right; font-size: 12px">
+                <el-button type="primary" class="mr10" size="medium" @click="handleAdd" v-if="(home.user.authIds.indexOf('10') >= 0)">新增</el-button>
+            </el-header>
         </div>
         <div class="container">
             <div class="handle-box">
-                <el-button type="primary" class="mr10" @click="handleAdd" v-if="(home.user.authIds.indexOf('1906207454710000008') >= 0)">新增</el-button>
+                <el-input v-model="query.username" placeholder="筛选用户名" class="handle-input mr10" style="width:150px"></el-input>
+                <el-input v-model="query.nickname" placeholder="筛选姓名" class="handle-input mr10" style="width:150px"></el-input>
+                <el-button type="primary" icon="search" @click="getData">搜索</el-button>
+                <el-button type="primary" icon="search" @click="clearQuery">清空</el-button>
             </div>
             <el-table :data="tableData" border class="table">
                 <el-table-column prop="username" label="用户名" >
@@ -23,10 +26,10 @@
                         <el-switch v-model="scope.row.status" @change="change(scope.$index)" :active-value="1" :inactive-value="0"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="180" align="center" v-if="(home.user.authIds.indexOf('1906245611310000003') >= 0)||(home.user.authIds.indexOf('1906245614110000004') >= 0)">
+                <el-table-column label="操作" width="180" align="center" v-if="(home.user.authIds.indexOf('11') >= 0)||(home.user.authIds.indexOf('12') >= 0)">
                     <template slot-scope="scope">
-                        <el-button v-if="(home.user.authIds.indexOf('1906245611310000003') >= 0)" type="text" icon="el-icon-edit"  @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                        <el-button v-if="(home.user.authIds.indexOf('1906245614110000004') >= 0)" type="text" icon="el-icon-delete" class="red"  @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
+                        <el-button v-if="(home.user.authIds.indexOf('11') >= 0)" type="text" icon="el-icon-edit"  @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button v-if="(home.user.authIds.indexOf('12') >= 0)" type="text" icon="el-icon-delete" class="red"  @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -135,40 +138,45 @@
             },
             roleListData(){
                 this.$http.get(bus.url.UserList.roleListUrl).then((response) => {
-                    if(response.body.success){
+                    if(bus.commonResultSuccess(response,this.$router)){
                         this.roleList = response.body.result;
-                    }else {
-                        this.$message.error(response.body.message);
                     }
                 }, (response) => {
                     // 响应错误回调
                     console.log(response);
-                    this.$message.error('请求服务器失败');
+                    this.$message.error('服务器崩溃了');
                 });
 
             },
-
-
-
             init(){
-                this.getData();
                 this.roleListData();
+                this.getData();
             },
             // 分页导航
             handleCurrentChange(val) {
                 this.getData();
             },
+            clearQuery(){
+                this.query = {
+                    'page.currentPage':1
+                };
+            },
             getData() {
+                if(this.waitting){
+                    return;
+                }
+                this.waitting = true;
                 this.$http.get(bus.url.UserList.tableDataUrl,{params:this.query}).then((response) => {
-                    if(response.body.success){
+                    if(bus.commonResultSuccess(response,this.$router)){
                         this.tableData = response.body.result;
                         this.dataCount =  response.body.count;
-                    }else {
-                        this.$message.error(response.body.message);
                     }
+                    this.delayEndWaitting();
                 }, (response) => {
                     // 响应错误回调
                     console.log(response);
+                    this.$message.error('服务器崩溃了');
+                    this.delayEndWaitting();
                 });
             },
             delayEndWaitting(){
@@ -199,14 +207,14 @@
                 if(this.form.id && this.form.id>0){
                     //更新
                     this.$http.post(bus.url.UserList.formUpdateUrl,this.form).then((response) => {
-                        if(response.body.success){
+                        if(bus.commonResultSuccess(response,this.$router)){
                             this.editVisible = false;
+                            this.waitting = false;
                             this.init();
                             this.$message.success(`更新成功`);
                         }else {
-                            this.$message.error(response.body.message);
+                            this.delayEndWaitting();
                         }
-                        this.delayEndWaitting();
                     }, (response) => {
                         // 响应错误回调
                         console.log(response);
@@ -215,14 +223,14 @@
                     });
                 }else {
                     this.$http.post(bus.url.UserList.formInsertUrl,this.form).then((response) => {
-                        if(response.body.success){
+                        if(bus.commonResultSuccess(response,this.$router)){
+                            this.waitting = false;
                             this.init();
                             this.$message.success(`添加成功`);
                         }else {
-                            this.$message.error(response.body.message);
+                            this.delayEndWaitting();
                         }
                         this.editVisible = false;
-                        this.delayEndWaitting();
                     }, (response) => {
                         // 响应错误回调
                         console.log(response);
@@ -238,13 +246,13 @@
                 }
                 this.waitting = true;
                 this.$http.get(bus.url.UserList.formDeleteUrl,{params:{id:this.delId}}).then((response) => {
-                    if(response.body.success){
+                    if(bus.commonResultSuccess(response,this.$router)){
+                        this.waitting = false;
                         this.init();
                         this.$message.success('删除成功');
                     }else {
-                        this.$message.error(response.body.message);
+                        this.delayEndWaitting();
                     }
-                    this.delayEndWaitting();
                 }, (response) => {
                     // 响应错误回调
                     console.log(response);

@@ -1,14 +1,11 @@
 <template>
     <div class="table">
         <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades" ></i> 角色配置</el-breadcrumb-item>
-            </el-breadcrumb>
         </div>
         <div class="container">
-            <div class="handle-box" v-if="(home.user.authIds.indexOf('1') >= 0)">
-                <el-button type="primary" class="mr10" @click="saveEdit">保存</el-button>
-            </div>
+            <el-header style="text-align: right; font-size: 12px">
+                <el-button type="primary" class="mr10" size="medium" @click="saveEdit">保存</el-button>
+            </el-header>
             <el-radio v-for="(item,index) in tableData" v-model="form.id" :label="item.id" @change="roleCheck(index)">{{item.name}}</el-radio>
 
             <div class="handle-box">

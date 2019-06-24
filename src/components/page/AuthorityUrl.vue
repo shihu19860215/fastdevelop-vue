@@ -1,10 +1,5 @@
 <template>
     <div class="table">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 权限url</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
         <div class="container">
             <div class="custom-tree-container">
                 <div class="block">
@@ -29,9 +24,11 @@
             </div>
         </div>
         <div class="container">
-            <h2>权限名:{{ checkAuthorityName }}</h2><br>
+            <el-header style="text-align: right; font-size: 12px">
+                <el-button type="primary" class="mr10" size="medium" @click="handleAdd" >添加权限url</el-button>
+            </el-header>
             <div class="handle-box">
-                <el-button type="primary" class="mr10" @click="handleAdd">添加权限url</el-button>
+                <h2>权限名:{{ checkAuthorityName }}</h2><br>
             </div>
             <el-table :data="authUrlTable" border class="table">
                 <el-table-column prop="url" label="请求url" >

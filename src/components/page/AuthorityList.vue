@@ -1,14 +1,11 @@
 <template>
     <div class="table">
         <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 基础表格</el-breadcrumb-item>
-            </el-breadcrumb>
+            <el-header style="text-align: right; font-size: 12px">
+                <el-button type="primary" class="mr10" size="medium" @click="handleAddRoot">添加主菜单</el-button>
+            </el-header>
         </div>
         <div class="container">
-            <div class="handle-box">
-                <el-button type="primary" class="mr10" @click="handleAddRoot">添加主菜单</el-button>
-            </div>
             <div class="custom-tree-container">
                 <div class="block">
                     <el-tree

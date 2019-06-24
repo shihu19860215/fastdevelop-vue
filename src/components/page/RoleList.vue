@@ -1,14 +1,11 @@
 <template>
     <div class="table">
         <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades" ></i> 基础表格</el-breadcrumb-item>
-            </el-breadcrumb>
+            <el-header style="text-align: right; font-size: 12px">
+                <el-button type="primary" class="mr10" size="medium" @click="handleAdd" v-if="home.user.authIds.indexOf('1') >= 0">新增</el-button>
+            </el-header>
         </div>
         <div class="container">
-            <div class="handle-box">
-                <el-button type="primary" class="mr10" @click="handleAdd" v-if="home.user.authIds.indexOf('1') >= 0">新增</el-button>
-            </div>
             <el-table :data="tableData" border class="table">
                 <el-table-column prop="name" label="角色名" >
                 </el-table-column>
