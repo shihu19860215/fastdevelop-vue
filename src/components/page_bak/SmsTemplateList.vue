@@ -10,9 +10,23 @@
                 <el-button type="primary" class="mr10" @click="handleAdd" v-if="home.user.authIds.indexOf('1') >= 0">新增</el-button>
             </div>
             <el-table :data="tableData" border class="table">
-                                <el-table-column prop="title" label="邮件标题" >
+                <el-table-column prop="title" label="短信标题" >
                 </el-table-column>
-                <el-table-column prop="content" label="邮件内容" >
+                <el-table-column prop="content" label="短信内容" >
+                </el-table-column>
+                <el-table-column prop="sendDate" label="发送日期" :formatter="sendDateFormatter" width="95">
+                </el-table-column>
+                <el-table-column prop="sendTime" label="发送时间" width="155">
+                </el-table-column>
+                <el-table-column prop="typeMeaning" label="类型" >
+                </el-table-column>
+                <el-table-column prop="status" label="状态" >
+                </el-table-column>
+                <el-table-column prop="updateVersion" label="更新版本" >
+                </el-table-column>
+                <el-table-column prop="createTime" label="创建时间" >
+                </el-table-column>
+                <el-table-column prop="updateTime" label="更新时间" >
                 </el-table-column>
                 <el-table-column label="启用禁用" align="center" v-if="home.user.authIds.indexOf('1') >= 0">
                     <template slot-scope="scope">
@@ -28,7 +42,7 @@
                 </el-table-column>
             </el-table>
             <div class="pagination">
-                <el-pagination background layout="prev, pager, next" :total="dataCount">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="dataCount">
                 </el-pagination>
             </div>
         </div>
@@ -36,11 +50,38 @@
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" :visible="editVisible" width="30%" :show-close=false>
             <el-form ref="form" :model="form" label-width="80px" :rules="rules">
-                <el-form-item label="邮件标题" prop="title">
+                <el-form-item label="短信标题" prop="title">
                     <el-input v-model="form.title"></el-input>
                 </el-form-item>
-                <el-form-item label="邮件内容" prop="content">
+                <el-form-item label="短信内容" prop="content">
                     <el-input v-model="form.content"></el-input>
+                </el-form-item>
+                <el-form-item label="发送日期" prop="sendDate">
+                    <el-col :span="12">
+                        <el-date-picker format="yyyy-MM-dd" value-format="yyyy-MM-dd HH:mm:ss" type="date" placeholder="选择日期" v-model="form.sendDate" style="width: 100%;" ></el-date-picker>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="发送时间" prop="sendTime">
+                    <el-col :span="12">
+                        <el-date-picker format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" placeholder="选择日期" v-model="form.sendTime" style="width: 100%;" ></el-date-picker>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="类型" prop="type">
+                    <el-col>
+                        <el-radio v-for="(item,index) in typeList" v-model="form.type" :label="item.databaseValue">{{item.meaning}}</el-radio>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="状态" prop="status">
+                    <el-input v-model="form.status"></el-input>
+                </el-form-item>
+                <el-form-item label="更新版本" prop="updateVersion">
+                    <el-input v-model.number="form.updateVersion"></el-input>
+                </el-form-item>
+                <el-form-item label="创建时间" prop="createTime">
+                    <el-input v-model="form.createTime"></el-input>
+                </el-form-item>
+                <el-form-item label="更新时间" prop="updateTime">
+                    <el-input v-model="form.updateTime"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -61,32 +102,58 @@
 </template>
 
 <script>
-    import bus from '../common/bus';
+    import bus from '../common_bak/bus';
     export default {
         name: 'SmsTemplateList',
         data() {
             return {
                 rules:{
                     title:[
-                        { required: true, message: '请输入邮件标题', trigger: 'blur' },
+                        { required: true, message: '请输入短信标题', trigger: 'blur' },
                         { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
                     ],
                     content:[
-                        { required: true, message: '请输入邮件内容', trigger: 'blur' },
+                        { required: true, message: '请输入短信内容', trigger: 'blur' },
                         { min: 1, max: 70, message: '长度在 1 到 70 个字符', trigger: 'blur' }
+                    ],
+                    sendDate:[
+                        { required: true, message: '请选择发送日期', trigger: 'blur' },
+                    ],
+                    sendTime:[
+                        { required: true, message: '请选择发送时间', trigger: 'blur' },
+                    ],
+                    type:[
+                        { required: true, message: '请选择类型', trigger: 'blur' },
+                    ],
+                    status:[
+                        { required: true, message: '请输入状态', trigger: 'blur' },
+                        { min: 1, max: 3, message: '长度在 1 到 3 个字符', trigger: 'blur' }
+                    ],
+                    updateVersion:[
+                        { required: true, message: '请输入更新版本', trigger: 'blur' },
+                        { type: 'number', message: '更新版本必须为数字值'}
+                    ],
+                    createTime:[
+                        { required: true, message: '请输入创建时间', trigger: 'blur' },
+                        { min: 1, max: 19, message: '长度在 1 到 19 个字符', trigger: 'blur' }
+                    ],
+                    updateTime:[
+                        { required: true, message: '请输入更新时间', trigger: 'blur' },
+                        { min: 1, max: 19, message: '长度在 1 到 19 个字符', trigger: 'blur' }
                     ]
                 },
-                listDataUrl: 'http://localhost:20122/api/customer/emailtemplate/list',
-                formInsertUrl: 'http://localhost:20122/api/customer/emailtemplate/insert',
-                formUpdateUrl: 'http://localhost:20122/api/customer/emailtemplate/update',
-                formRealDeleteUrl: 'http://localhost:20122/api/customer/emailtemplate/delete',
-                formLogicDeleteUrl: 'http://localhost:20122/api/customer/emailtemplate/logicdelete',
+                listDataUrl: 'http://localhost:20122/api/customer/smstemplate/listvo',
+                formInsertUrl: 'http://localhost:20122/api/customer/smstemplate/insert',
+                formUpdateUrl: 'http://localhost:20122/api/customer/smstemplate/update',
+                formRealDeleteUrl: 'http://localhost:20122/api/customer/smstemplate/delete',
+                formLogicDeleteUrl: 'http://localhost:20122/api/customer/smstemplate/logicdelete',
                 tableData: [],
                 query:{
                     'page.currentPage':1
                 },
                 dataCount:0,
                 form:{},
+                typeList:[],
                 editVisible: false,
                 delVisible: false,
                 delId: -1,
@@ -100,8 +167,34 @@
         computed: {
         },
         methods: {
+            sendDateFormatter(row, column){
+                var dateTime = row.sendDate;
+                if(dateTime){
+                    var array = dateTime.split(" ");
+                    if(array.length == 2){
+                        return dateTime.split(" ")[0];
+                    }
+                }
+                return '';
+            },
+            listType(){
+                var parm = {
+                    tableName:'t_sms_template',
+                    columnName:'type'
+                };
+                this.$http.get(bus.url.sys.dictUrl, {params:parm}).then((response) => {
+                    if(bus.commonResultSuccess(response,this.$router)){
+                        this.typeList = response.body.result;
+                    }
+                }, (response) => {
+                    // 响应错误回调
+                    console.log(response);
+                    this.$message.error("服务器异常");
+                });
+            },
             init(){
-                this.getData();
+                this.listType(),
+                    this.getData()
             },
             // 分页导航
             handleCurrentChange(val) {
@@ -109,15 +202,21 @@
                 this.getData();
             },
             getData() {
-                this.$http.get(bus.url.EmailTemplateList.listDataUrl,{params:this.query}).then((response) => {
+                if(this.waitting){
+                    return;
+                }
+                this.waitting = true;
+                this.$http.get(bus.url.SmsTemplateList.listDataUrl,{params:this.query}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.tableData = response.body.result;
                         this.dataCount =  response.body.count;
                     }
+                    this.delayEndWaitting();
                 }, (response) => {
                     // 响应错误回调
                     console.log(response);
                     this.$message.error("服务器异常");
+                    this.delayEndWaitting();
                 });
             },
             delayEndWaitting(){
@@ -139,6 +238,7 @@
                 this.delVisible = true;
             },
             handleEditClose(){
+                this.form = {};
                 this.$refs['form'].resetFields();
                 this.editVisible = false
             },
@@ -154,7 +254,7 @@
                     this.waitting = true;
                     if(this.form.id && this.form.id>0){
                         //更新
-                        this.$http.post(bus.url.EmailTemplateList.formUpdateUrl,this.form).then((response) => {
+                        this.$http.post(bus.url.SmsTemplateList.formUpdateUrl,this.form).then((response) => {
                             if(bus.commonResultSuccess(response,this.$router)){
                                 this.editVisible = false;
                                 this.init();
@@ -168,7 +268,7 @@
                             this.delayEndWaitting();
                         });
                     }else {
-                        this.$http.post(bus.url.EmailTemplateList.formInsertUrl,this.form).then((response) => {
+                        this.$http.post(bus.url.SmsTemplateList.formInsertUrl,this.form).then((response) => {
                             if(bus.commonResultSuccess(response,this.$router)){
                                 this.editVisible = false;
                                 this.init();
@@ -191,9 +291,9 @@
                 }
                 var delUrl = '';
                 if(this.realDel){
-                    delUrl = bus.url.EmailTemplateList.formRealDeleteUrl;
+                    delUrl = bus.url.SmsTemplateList.formRealDeleteUrl;
                 }else {
-                    delUrl = bus.url.EmailTemplateList.formLogicDeleteUrl
+                    delUrl = bus.url.SmsTemplateList.formLogicDeleteUrl
                 }
                 this.waitting = true;
                 this.$http.get(delUrl,{params:{id:this.delId}}).then((response) => {
@@ -216,7 +316,7 @@
                     return;
                 }
                 this.waitting = true;
-                this.$http.post(bus.url.EmailTemplateList.formUpdateUrl,this.tableData[idx]).then((response) => {
+                this.$http.post(bus.url.SmsTemplateList.formUpdateUrl,this.tableData[idx]).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.$message.success(`更新成功`);
                         this.tableData[idx].updateVersion ++;

@@ -7,7 +7,7 @@
         </div>
         <div class="container">
             <div class="handle-box">
-                <el-button type="primary" class="mr10" @click="handleAdd" v-if="(home.user.authIds.indexOf('1906207454710000008') >= 0)">新增</el-button>
+                <el-button type="primary" class="mr10" @click="handleAdd" v-if="(home.user.authIds.indexOf('19') >= 0)">新增</el-button>
             </div>
             <el-table :data="tableData" border class="table">
                 <el-table-column prop="username" label="用户名" >
@@ -18,15 +18,15 @@
                 </el-table-column>
                 <el-table-column prop="createTime" label="创建时间">
                 </el-table-column>
-                <el-table-column label="启用禁用" align="center" v-if="(home.user.authIds.indexOf('1') >= 0)">
+                <el-table-column label="启用禁用" align="center" v-if="(home.user.authIds.indexOf('20') >= 0)">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.status" @change="change(scope.$index)" :active-value="1" :inactive-value="0"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="180" align="center" v-if="(home.user.authIds.indexOf('1906245611310000003') >= 0)||(home.user.authIds.indexOf('1906245614110000004') >= 0)">
+                <el-table-column label="操作" width="180" align="center" v-if="(home.user.authIds.indexOf('21') >= 0)||(home.user.authIds.indexOf('22') >= 0)">
                     <template slot-scope="scope">
-                        <el-button v-if="(home.user.authIds.indexOf('1906245611310000003') >= 0)" type="text" icon="el-icon-edit"  @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                        <el-button v-if="(home.user.authIds.indexOf('1906245614110000004') >= 0)" type="text" icon="el-icon-delete" class="red"  @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
+                        <el-button v-if="(home.user.authIds.indexOf('21') >= 0)" type="text" icon="el-icon-edit"  @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button v-if="(home.user.authIds.indexOf('22') >= 0)" type="text" icon="el-icon-delete" class="red"  @click="handleDelete(scope.$index, scope.row)" >删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -69,7 +69,7 @@
 </template>
 
 <script>
-    import bus from '../common/bus';
+    import bus from '../common_bak/bus';
     export default {
         name: 'userlist',
         data() {

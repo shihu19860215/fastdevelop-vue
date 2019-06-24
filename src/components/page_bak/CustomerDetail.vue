@@ -41,7 +41,7 @@
                     </el-form-item>
                     <el-form-item label="所在区域">
                         <el-input v-model="customerInfoVO.fullArea" :disabled="readOnly" v-if="readOnly"></el-input>
-                        <el-cascader :options="sysArea" v-model="customerInfoVO.areaIds" :disabled="readOnly" :props="areaProps" v-else></el-cascader>
+                        <el-cascader :options="sysArea" v-model="customerInfoVO.areaIds" :disabled="readOnly" :props="areaProps" filterable v-else></el-cascader>
                     </el-form-item>
 
                     <el-form-item label="备用联系人">
@@ -98,7 +98,7 @@
 </template>
 
 <script>
-    import bus from '../common/bus'
+    import bus from '../common_bak/bus'
     export default {
         name: 'customerDetail',
         data: function(){
@@ -114,7 +114,8 @@
                 areaProps:{
                     value: 'id',
                     label: 'name',
-                    children: 'children'
+                    children: 'children',
+                    expandTrigger: 'hover'
                 },
                 activityInfoVOList:[],
                 sysArea:[],

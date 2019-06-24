@@ -106,7 +106,7 @@
 </template>
 
 <script>
-    import bus from '../common/bus';
+    import bus from '../common_bak/bus';
     export default {
         name: 'SmsTemplateList',
         data() {

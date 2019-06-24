@@ -32,7 +32,7 @@
 </template>
 
 <script>
-    import bus from './bus.js';
+    import bus from './/bus.js';
     export default {
         data() {
             return {
