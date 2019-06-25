@@ -11,7 +11,7 @@ export default new VueRouter({
         },
         {
             path: '/',
-            redirect: '/table'
+            redirect: '/arealist'
         },
         {
             path: '/',
@@ -19,9 +19,14 @@ export default new VueRouter({
             meta: { title: '后台管理' },
             children:[
                 {
-                    path: '/table',
-                    component: resolve => require(['../components/page/BaseTable.vue'], resolve),
-                    meta: { title: '基础表格' }
+                    path: '/arealist',
+                    component: resolve => require(['../components/page/AreaList.vue'], resolve),
+                    meta: { title: '区域列表' }
+                },
+                {
+                    path: '/columndictlist',
+                    component: resolve => require(['../components/page/ColumnDictList.vue'], resolve),
+                    meta: { title: '字段字典列表' }
                 },
                 {
                     path: '/userlist',

@@ -1,8 +1,8 @@
 <template>
     <div class="table">
-        <div class="crumbs">
+        <div class="crumbs" v-if="home.user.authIds.indexOf('1') >= 0">
             <el-header style="text-align: right; font-size: 12px">
-                <el-button type="primary" class="mr10" size="medium" @click="handleAdd" v-if="(home.user.authIds.indexOf('10') >= 0)">新增</el-button>
+                <el-button type="primary" class="mr10" size="medium" @click="handleAdd">新增</el-button>
             </el-header>
         </div>
         <div class="container">

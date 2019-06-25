@@ -16,6 +16,20 @@ const bus = new Vue({
             Home:{
                 userAuthUrl:"http://localhost:20122/api/sys/user/getUserInfo",
             },
+            AreaList:{
+                listDataUrl: 'http://localhost:20122/api/sys/area/listvo',
+                formInsertUrl: 'http://localhost:20122/api/sys/area/insert',
+                formUpdateUrl: 'http://localhost:20122/api/sys/area/update',
+                formRealDeleteUrl: 'http://localhost:20122/api/sys/area/delete',
+                formLogicDeleteUrl: 'http://localhost:20122/api/sys/area/logicdelete'
+            },
+            ColumnDictList:{
+                listDataUrl: 'http://localhost:20122/api/sys/columndict/listvo',
+                formInsertUrl: 'http://localhost:20122/api/sys/columndict/insert',
+                formUpdateUrl: 'http://localhost:20122/api/sys/columndict/update',
+                formRealDeleteUrl: 'http://localhost:20122/api/sys/columndict/delete',
+                formLogicDeleteUrl: 'http://localhost:20122/api/sys/columndict/logicdelete'
+            },
             UserList:{
                 roleListUrl: 'http://localhost:20122/api/sys/role/list',
                 tableDataUrl: 'http://localhost:20122/api/sys/user/listvo',
