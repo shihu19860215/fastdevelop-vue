@@ -24,6 +24,7 @@
     export default {
         data(){
             return {
+                userAuthUrl:bus.url.basePath + "/api/sys/user/getUserInfo",
                 tagsList: [],
                 collapse: false,
                 user:{
@@ -62,7 +63,7 @@
         },
         methods:{
             userInit(){
-                this.$http.get(bus.url.Home.userAuthUrl).then((response) => {
+                this.$http.get(this.userAuthUrl).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.user = response.body.result;
                     }

@@ -80,7 +80,6 @@
     import bus from '../common/bus';
 
     export default {
-        name: 'SmsTemplateList',
         data() {
             return {
                 linkAuthList:[],
@@ -94,6 +93,12 @@
                         { required: true, message: '请选择连接权限', trigger: 'blur' },
                     ]
                 },
+                listDataUrl: bus.url.basePath + '/api/sys/authorityurl/listvo',
+                formInsertUrl: bus.url.basePath + '/api/sys/authorityurl/insert',
+                formUpdateUrl: bus.url.basePath + '/api/sys/authorityurl/update',
+                formRealDeleteUrl: bus.url.basePath + '/api/sys/authorityurl/delete',
+                formLogicDeleteUrl: bus.url.basePath + '/api/sys/authorityurl/logicdelete',
+                authorityListDataUrl: bus.url.basePath + '/api/sys/authority/listvo',
                 tableData: [],
                 authUrlTable:[],
                 checkAuthorityName : "通用权限",
@@ -124,7 +129,7 @@
                 this.getData();
             },
             getData(){
-                this.$http.get(bus.url.AuthorityUrl.listDataUrl, {params:{authorityId: this.checkAuthorityId}}).then((response) => {
+                this.$http.get(this.listDataUrl, {params:{authorityId: this.checkAuthorityId}}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.authUrlTable = response.body.result;
                     }
@@ -137,7 +142,8 @@
             listLinkAuth(){
                 var parm = {
                     tableName:'sys_authority_url',
-                    columnName:'link_auth'
+                    columnName:'link_auth',
+                    status:1
                 };
                 this.$http.get(bus.url.sys.dictUrl, {params:parm}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
@@ -153,18 +159,17 @@
                 this.getData();
             },
             getAuthorityTree() {
-                this.$http.get(bus.url.AuthorityList.listDataUrl, {params: this.query}).then((response) => {
+                this.$http.get(this.authorityListDataUrl, {params: this.query}).then((response) => {
                     if (bus.commonResultSuccess(response, this.$router)) {
                         this.tableData = response.body.result;
                         this.tableData.unshift({
                             id : 0,
-                            name : "通用权限",
+                            name : "内置权限",
                             layer: 1,
                             type : 3,
                             children : []
                         });
                         this.getData();
-                        console.log(this.tableData)
                     }
                 }, (response) => {
                     // 响应错误回调
@@ -185,7 +190,6 @@
             },
             handleEdit(index, row) {
                 this.form = JSON.parse(JSON.stringify(this.authUrlTable[index]));
-                console.log(this.form)
                 this.editVisible = true;
             },
             handleDelete(row, realDel) {
@@ -210,7 +214,7 @@
                     this.waitting = true;
                     if(this.form.id && this.form.id>0){
                         //更新
-                        this.$http.post(bus.url.AuthorityUrl.formUpdateUrl,this.form).then((response) => {
+                        this.$http.post(this.formUpdateUrl,this.form).then((response) => {
                             if(bus.commonResultSuccess(response,this.$router)){
                                 this.editVisible = false;
                                 this.waitting = false;
@@ -226,7 +230,7 @@
                             this.delayEndWaitting();
                         });
                     }else {
-                        this.$http.post(bus.url.AuthorityUrl.formInsertUrl,this.form).then((response) => {
+                        this.$http.post(this.formInsertUrl,this.form).then((response) => {
                             if(bus.commonResultSuccess(response,this.$router)){
                                 this.editVisible = false;
                                 this.waitting = false;
@@ -251,9 +255,9 @@
                 }
                 var delUrl = '';
                 if(this.realDel){
-                    delUrl = bus.url.AuthorityUrl.formRealDeleteUrl;
+                    delUrl = this.formRealDeleteUrl;
                 }else {
-                    delUrl = bus.url.AuthorityUrl.formLogicDeleteUrl
+                    delUrl = this.formLogicDeleteUrl
                 }
                 this.waitting = true;
                 this.$http.get(delUrl,{params:{id:this.delId}}).then((response) => {

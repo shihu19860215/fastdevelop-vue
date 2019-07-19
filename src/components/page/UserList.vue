@@ -7,10 +7,10 @@
         </div>
         <div class="container">
             <div class="handle-box">
-                <el-input v-model="query.username" placeholder="筛选用户名" class="handle-input mr10" style="width:150px"></el-input>
-                <el-input v-model="query.nickname" placeholder="筛选姓名" class="handle-input mr10" style="width:150px"></el-input>
-                <el-button type="primary" icon="search" @click="getData">搜索</el-button>
-                <el-button type="primary" icon="search" @click="clearQuery">清空</el-button>
+                <el-input v-model="query.username" placeholder="用户名" class="handle-input mr10" style="width:150px"></el-input>
+                <el-input v-model="query.nickname" placeholder="昵称" class="handle-input mr10" style="width:150px"></el-input>
+                <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
+                <el-button type="primary" icon="el-icon-delete" @click="clearQuery">清空</el-button>
             </div>
             <el-table :data="tableData" border class="table">
                 <el-table-column prop="username" label="用户名" >
@@ -74,7 +74,6 @@
 <script>
     import bus from '../common/bus';
     export default {
-        name: 'userlist',
         data() {
             return {
                 rules:{
@@ -83,6 +82,11 @@
                         { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
                     ]
                 },
+                roleListUrl: bus.url.basePath + '/api/sys/role/list',
+                tableDataUrl: bus.url.basePath + '/api/sys/user/listvo',
+                formInsertUrl: bus.url.basePath + '/api/sys/user/insertuservo',
+                formUpdateUrl: bus.url.basePath + '/api/sys/user/updateuservo',
+                formDeleteUrl: bus.url.basePath + '/api/sys/user/delete',
                 roleList:[],
                 value1:true,
                 tableData: [],
@@ -111,7 +115,7 @@
                     return;
                 }
                 this.waitting = true;
-                this.$http.post(bus.url.UserList.formUpdateUrl,this.tableData[idx]).then((response) => {
+                this.$http.post(this.formUpdateUrl,this.tableData[idx]).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.$message.success(`更新成功`);
                         this.tableData[idx].updateVersion ++;
@@ -137,7 +141,7 @@
                 return role;
             },
             roleListData(){
-                this.$http.get(bus.url.UserList.roleListUrl).then((response) => {
+                this.$http.get(this.roleListUrl,{params:{status:1}}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.roleList = response.body.result;
                     }
@@ -156,6 +160,18 @@
             handleCurrentChange(val) {
                 this.getData();
             },
+            search(){
+                if(this.query.username == ''){
+                    delete this.query.username;
+                }
+                if(this.query.password == ''){
+                    delete this.query.password;
+                }
+                if(this.query.nickname == ''){
+                    delete this.query.nickname;
+                }
+                this.getData();
+            },
             clearQuery(){
                 this.query = {
                     'page.currentPage':1
@@ -166,7 +182,7 @@
                     return;
                 }
                 this.waitting = true;
-                this.$http.get(bus.url.UserList.tableDataUrl,{params:this.query}).then((response) => {
+                this.$http.get(this.tableDataUrl,{params:this.query}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.tableData = response.body.result;
                         this.dataCount =  response.body.count;
@@ -206,7 +222,7 @@
                 this.waitting = true;
                 if(this.form.id && this.form.id>0){
                     //更新
-                    this.$http.post(bus.url.UserList.formUpdateUrl,this.form).then((response) => {
+                    this.$http.post(this.formUpdateUrl,this.form).then((response) => {
                         if(bus.commonResultSuccess(response,this.$router)){
                             this.editVisible = false;
                             this.waitting = false;
@@ -222,7 +238,7 @@
                         this.delayEndWaitting();
                     });
                 }else {
-                    this.$http.post(bus.url.UserList.formInsertUrl,this.form).then((response) => {
+                    this.$http.post(this.formInsertUrl,this.form).then((response) => {
                         if(bus.commonResultSuccess(response,this.$router)){
                             this.waitting = false;
                             this.init();
@@ -245,7 +261,7 @@
                     return;
                 }
                 this.waitting = true;
-                this.$http.get(bus.url.UserList.formDeleteUrl,{params:{id:this.delId}}).then((response) => {
+                this.$http.get(this.formDeleteUrl,{params:{id:this.delId}}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.waitting = false;
                         this.init();

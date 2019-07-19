@@ -78,7 +78,6 @@
 <script>
     import bus from '../common/bus';
     export default {
-        name: 'SmsTemplateList',
         data() {
             return {
                 rules:{
@@ -115,6 +114,11 @@
                         { min: 1, max: 32, message: '长度在 1 到 32 个字符', trigger: 'blur' }
                     ],
                 },
+                listDataUrl: bus.url.basePath + '/api/sys/area/listvo',
+                formInsertUrl: bus.url.basePath + '/api/sys/area/insert',
+                formUpdateUrl: bus.url.basePath + '/api/sys/area/update',
+                formRealDeleteUrl: bus.url.basePath + '/api/sys/area/delete',
+                formLogicDeleteUrl: bus.url.basePath + '/api/sys/area/logicdelete',
                 tableData: [],
                 query:{
                     'page.currentPage':1,
@@ -148,7 +152,7 @@
                     return;
                 }
                 this.waitting = true;
-                this.$http.get(bus.url.AreaList.listDataUrl,{params:this.query}).then((response) => {
+                this.$http.get(this.listDataUrl,{params:this.query}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                     this.tableData = response.body.result;
                     this.dataCount =  response.body.count;
@@ -196,7 +200,7 @@
                 this.waitting = true;
                 if(this.form.id && this.form.id>0){
                     //更新
-                    this.$http.post(bus.url.AreaList.formUpdateUrl,this.form).then((response) => {
+                    this.$http.post(this.formUpdateUrl,this.form).then((response) => {
                         if(bus.commonResultSuccess(response,this.$router)){
                             this.editVisible = false;
                             this.waitting = false;
@@ -212,7 +216,7 @@
                             this.delayEndWaitting();
                     });
                 }else {
-                    this.$http.post(bus.url.AreaList.formInsertUrl,this.form).then((response) => {
+                    this.$http.post(this.formInsertUrl,this.form).then((response) => {
                         if(bus.commonResultSuccess(response,this.$router)){
                             this.editVisible = false;
                             this.waitting = false;
@@ -237,9 +241,9 @@
                 }
                 var delUrl = '';
                 if(this.realDel){
-                    delUrl = bus.url.AreaList.formRealDeleteUrl;
+                    delUrl = this.formRealDeleteUrl;
                 }else {
-                    delUrl = bus.url.AreaList.formLogicDeleteUrl
+                    delUrl = this.formLogicDeleteUrl
                 }
                 this.waitting = true;
                 this.$http.get(delUrl,{params:{id:this.delId}}).then((response) => {
@@ -264,7 +268,7 @@
                     return;
                 }
                 this.waitting = true;
-                this.$http.post(bus.url.AreaList.formUpdateUrl,this.tableData[idx]).then((response) => {
+                this.$http.post(this.formUpdateUrl,this.tableData[idx]).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.$message.success(`更新成功`);
                         this.tableData[idx].updateVersion ++;

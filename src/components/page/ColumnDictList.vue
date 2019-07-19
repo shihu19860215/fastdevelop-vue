@@ -1,11 +1,17 @@
 <template>
     <div class="table">
-        <div class="crumbs" v-if="home.user.authIds.indexOf('1') >= 0">
+        <div class="crumbs" v-if="home.user.authIds.indexOf('28') >= 0">
             <el-header style="text-align: right; font-size: 12px">
                 <el-button type="primary" class="mr10" size="medium" @click="handleAdd">新增</el-button>
             </el-header>
         </div>
         <div class="container">
+            <div class="handle-box">
+                <el-input v-model="query.tableName" placeholder="表名" class="handle-input mr10" style="width:150px"></el-input>
+                <el-input v-model="query.columnName" placeholder="字段名" class="handle-input mr10" style="width:150px"></el-input>
+                <el-button type="primary" icon="search" @click="getData">搜索</el-button>
+                <el-button type="primary" icon="search" @click="clearQuery">清空</el-button>
+            </div>
             <el-table :data="tableData" border class="table">
                 <el-table-column prop="tableName" label="表名" >
                 </el-table-column>
@@ -15,15 +21,15 @@
                 </el-table-column>
                 <el-table-column prop="meaning" label="实际意思" >
                 </el-table-column>
-                <el-table-column label="启用禁用" align="center" v-if="home.user.authIds.indexOf('1') >= 0">
+                <el-table-column label="启用禁用" align="center" v-if="home.user.authIds.indexOf('31') >= 0">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.status" @change="startStop(scope.$index)" :active-value="1" :inactive-value="0"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="180" align="center" v-if="home.user.authIds.indexOf('1') >= 0 && home.user.authIds.indexOf('1') >= 0">
+                <el-table-column label="操作" width="180" align="center" v-if="home.user.authIds.indexOf('29') >= 0 || home.user.authIds.indexOf('30') >= 0">
                     <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-edit"  @click="handleEdit(scope.$index, scope.row)" v-if="home.user.authIds.indexOf('1') >= 0">编辑</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red"  @click="handleDelete(scope.row, true)" v-if="home.user.authIds.indexOf('1') >= 0">物理删除</el-button>
+                        <el-button type="text" icon="el-icon-edit"  @click="handleEdit(scope.$index, scope.row)" v-if="home.user.authIds.indexOf('29') >= 0">编辑</el-button>
+                        <el-button type="text" icon="el-icon-delete" class="red"  @click="handleDelete(scope.row, true)" v-if="home.user.authIds.indexOf('30') >= 0">物理删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -69,7 +75,6 @@
 <script>
     import bus from '../common/bus';
     export default {
-        name: 'SmsTemplateList',
         data() {
             return {
                 rules:{
@@ -90,6 +95,11 @@
                         { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
                     ],
                 },
+                listDataUrl: bus.url.basePath + '/api/sys/columndict/listvo',
+                formInsertUrl: bus.url.basePath + '/api/sys/columndict/insert',
+                formUpdateUrl: bus.url.basePath + '/api/sys/columndict/update',
+                formRealDeleteUrl: bus.url.basePath + '/api/sys/columndict/delete',
+                formLogicDeleteUrl: bus.url.basePath + '/api/sys/columndict/logicdelete',
                 tableData: [],
                 query:{
                     'page.currentPage':1,
@@ -118,12 +128,18 @@
                 this.query['page.currentPage'] =val;
                 this.getData();
             },
+            clearQuery(){
+                this.query = {
+                    'page.currentPage':1,
+                    'page.pageSize' : 10
+                };
+            },
             getData() {
                 if(this.waitting){
                     return;
                 }
                 this.waitting = true;
-                this.$http.get(bus.url.ColumnDictList.listDataUrl,{params:this.query}).then((response) => {
+                this.$http.get(this.listDataUrl,{params:this.query}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.tableData = response.body.result;
                         this.dataCount =  response.body.count;
@@ -171,7 +187,7 @@
                 this.waitting = true;
                 if(this.form.id && this.form.id>0){
                     //更新
-                    this.$http.post(bus.url.ColumnDictList.formUpdateUrl,this.form).then((response) => {
+                    this.$http.post(this.formUpdateUrl,this.form).then((response) => {
                         if(bus.commonResultSuccess(response,this.$router)){
                             this.editVisible = false;
                             this.waitting = false;
@@ -187,7 +203,7 @@
                             this.delayEndWaitting();
                     });
                 }else {
-                    this.$http.post(bus.url.ColumnDictList.formInsertUrl,this.form).then((response) => {
+                    this.$http.post(this.formInsertUrl,this.form).then((response) => {
                         if(bus.commonResultSuccess(response,this.$router)){
                             this.editVisible = false;
                             this.waitting = false;
@@ -212,9 +228,9 @@
                 }
                 var delUrl = '';
                 if(this.realDel){
-                    delUrl = bus.url.ColumnDictList.formRealDeleteUrl;
+                    delUrl = this.formRealDeleteUrl;
                 }else {
-                    delUrl = bus.url.ColumnDictList.formLogicDeleteUrl
+                    delUrl = this.formLogicDeleteUrl
                 }
                 this.waitting = true;
                 this.$http.get(delUrl,{params:{id:this.delId}}).then((response) => {
@@ -239,7 +255,7 @@
                     return;
                 }
                 this.waitting = true;
-                this.$http.post(bus.url.ColumnDictList.formUpdateUrl,this.tableData[idx]).then((response) => {
+                this.$http.post(this.formUpdateUrl,this.tableData[idx]).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.$message.success(`更新成功`);
                         this.tableData[idx].updateVersion ++;

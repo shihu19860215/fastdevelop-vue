@@ -13,7 +13,7 @@
                         <i class="el-icon-rank"></i>
                     </el-tooltip>
                 </div>
-                <!-- 消息中心-->
+                <!-- 消息中心
                 <div class="btn-bell">
                     <el-tooltip effect="dark" :content="message?`有${message}条未读消息`:`消息中心`" placement="bottom">
                         <router-link to="/table">
@@ -21,7 +21,7 @@
                         </router-link>
                     </el-tooltip>
                     <span class="btn-bell-badge" v-if="message"></span>
-                </div>
+                </div>-->
                 <!-- 用户头像 -->
                 <div class="user-avator"><img src="../../assets/img/img.jpg"></div>
                 <!-- 用户名下拉菜单 -->
@@ -48,6 +48,7 @@
     export default {
         data() {
             return {
+                loginOutUrl:bus.url.basePath + "/api/sys/login/loginout",
                 collapse: false,
                 fullscreen: false,
                 name: 'linxin',
@@ -64,7 +65,7 @@
                         return;
                     }
                     this.waitting = true;
-                    this.$http.get(bus.url.Header.loginOutUrl).then((response) => {
+                    this.$http.get(this.loginOutUrl).then((response) => {
                         if(bus.commonResultSuccess(response,this.$router)){
                             localStorage.removeItem("is_login");
                             this.$message.success('退出登录成功！');

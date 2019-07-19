@@ -4,71 +4,9 @@ import Vue from 'vue';
 const bus = new Vue({
     data:{
         url:{
+            basePath: 'http://localhost:20122',
             sys:{
-                dictUrl:'http://localhost:20122/api/sys/columndict/listdict'
-            },
-            Login:{
-                loginUrl:"http://localhost:20122/api/sys/login/login"
-            },
-            Header:{
-                loginOutUrl:"http://localhost:20122/api/sys/login/loginout"
-            },
-            Home:{
-                userAuthUrl:"http://localhost:20122/api/sys/user/getUserInfo",
-            },
-            AreaList:{
-                listDataUrl: 'http://localhost:20122/api/sys/area/listvo',
-                formInsertUrl: 'http://localhost:20122/api/sys/area/insert',
-                formUpdateUrl: 'http://localhost:20122/api/sys/area/update',
-                formRealDeleteUrl: 'http://localhost:20122/api/sys/area/delete',
-                formLogicDeleteUrl: 'http://localhost:20122/api/sys/area/logicdelete'
-            },
-            ColumnDictList:{
-                listDataUrl: 'http://localhost:20122/api/sys/columndict/listvo',
-                formInsertUrl: 'http://localhost:20122/api/sys/columndict/insert',
-                formUpdateUrl: 'http://localhost:20122/api/sys/columndict/update',
-                formRealDeleteUrl: 'http://localhost:20122/api/sys/columndict/delete',
-                formLogicDeleteUrl: 'http://localhost:20122/api/sys/columndict/logicdelete'
-            },
-            UserList:{
-                roleListUrl: 'http://localhost:20122/api/sys/role/list',
-                tableDataUrl: 'http://localhost:20122/api/sys/user/listvo',
-                formInsertUrl: 'http://localhost:20122/api/sys/user/insertuservo',
-                formUpdateUrl: 'http://localhost:20122/api/sys/user/updateuservo',
-                formDeleteUrl: 'http://localhost:20122/api/sys/user/delete',
-            },
-            RoleList:{
-                listDataUrl: 'http://localhost:20122/api/sys/role/listvo',
-                formInsertUrl: 'http://localhost:20122/api/sys/role/insert',
-                formUpdateUrl: 'http://localhost:20122/api/sys/role/update',
-                formRealDeleteUrl: 'http://localhost:20122/api/sys/role/delete',
-                formLogicDeleteUrl: 'http://localhost:20122/api/sys/role/logicdelete'
-            },
-            RoleAuthority:{
-                tableDataUrl: 'http://localhost:20122/api/sys/role/listvo',
-                authListUrl: 'http://localhost:20122/api/sys/authority/listvo',
-                roleAuthUpdateUrl: 'http://localhost:20122/api/sys/roleauthoritymapping/updateroleauth'
-            },
-            MenuList:{
-                listDataUrl: 'http://localhost:20122/api/sys/authority/listvo',
-                formInsertUrl: 'http://localhost:20122/api/sys/authority/insert',
-                formUpdateUrl: 'http://localhost:20122/api/sys/authority/update',
-                formRealDeleteUrl: 'http://localhost:20122/api/sys/authority/delete',
-                formLogicDeleteUrl: 'http://localhost:20122/api/sys/authority/logicdelete'
-            },
-            AuthorityList:{
-                listDataUrl: 'http://localhost:20122/api/sys/authority/listvo',
-                formInsertUrl: 'http://localhost:20122/api/sys/authority/insert',
-                formUpdateUrl: 'http://localhost:20122/api/sys/authority/update',
-                formRealDeleteUrl: 'http://localhost:20122/api/sys/authority/delete',
-                formLogicDeleteUrl: 'http://localhost:20122/api/sys/authority/logicdelete'
-            },
-            AuthorityUrl:{
-                listDataUrl: 'http://localhost:20122/api/sys/authorityurl/listvo',
-                formInsertUrl: 'http://localhost:20122/api/sys/authorityurl/insert',
-                formUpdateUrl: 'http://localhost:20122/api/sys/authorityurl/update',
-                formRealDeleteUrl: 'http://localhost:20122/api/sys/authorityurl/delete',
-                formLogicDeleteUrl: 'http://localhost:20122/api/sys/authorityurl/logicdelete'
+                dictUrl:'http://localhost:20122/api/sys/columndict/list'
             }
         }
     },

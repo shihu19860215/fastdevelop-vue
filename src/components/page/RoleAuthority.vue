@@ -15,8 +15,10 @@
                     show-checkbox
                     default-expand-all
                     node-key="id"
-                    :props="authProps"
-                     filter="treeFilter">
+                    :props="authProps">
+                <span class="custom-tree-node" slot-scope="{ node, data }">
+                <span>({{ data.id }}){{ data.name }}</span>
+              </span>
             </el-tree>
         </div>
 
@@ -26,10 +28,12 @@
 <script>
     import bus from '../common/bus';
     export default {
-        name: 'basetable',
         data() {
             return {
                 tableData: [],
+                tableDataUrl: bus.url.basePath + '/api/sys/role/listvo',
+                authListUrl: bus.url.basePath + '/api/sys/authority/listvo',
+                roleAuthUpdateUrl: bus.url.basePath + '/api/sys/roleauthoritymapping/updateroleauth',
                 authList:[],
                 authProps:{
                     children: 'children',
@@ -72,7 +76,7 @@
                 this.getData();
             },
             authListInit(){
-                this.$http.get(bus.url.RoleAuthority.authListUrl,).then((response) => {
+                this.$http.get(this.authListUrl).then((response) => {
                     if(response.body.success){
                         this.authList = response.body.result;
                     }else {
@@ -86,7 +90,7 @@
                 });
             },
             getData() {
-                this.$http.get(bus.url.RoleAuthority.tableDataUrl,{params:this.query}).then((response) => {
+                this.$http.get(this.tableDataUrl,{params:this.query}).then((response) => {
                     if(response.body.success){
                         this.tableData = response.body.result;
                         this.dataCount =  response.body.count;
@@ -114,7 +118,7 @@
                     return;
                 }
                 this.waitting = true;
-                this.$http.post(bus.url.RoleAuthority.roleAuthUpdateUrl,this.form).then((response) => {
+                this.$http.post(this.roleAuthUpdateUrl,this.form).then((response) => {
                     if(response.body.success){
                         this.$message.success(`保存成功`);
                     }else {

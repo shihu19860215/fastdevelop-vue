@@ -29,6 +29,16 @@ export default new VueRouter({
                     meta: { title: '字段字典列表' }
                 },
                 {
+                    path: '/auditconfigurelist',
+                    component: resolve => require(['../components/page/AuditConfigureList.vue'], resolve),
+                    meta: { title: '审计配置列表' }
+                },
+                {
+                    path: '/auditlist',
+                    component: resolve => require(['../components/page/AuditList.vue'], resolve),
+                    meta: { title: '审计列表' }
+                },
+                {
                     path: '/userlist',
                     component: resolve => require(['../components/page/UserList.vue'], resolve),
                     meta: { title: '用户列表' }

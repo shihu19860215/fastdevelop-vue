@@ -94,7 +94,6 @@
     import bus from '../common/bus';
 
     export default {
-        name: 'SmsTemplateList',
         data() {
             return {
                 authList:[],
@@ -123,18 +122,17 @@
                         {min: 1, max: 30, message: '长度在 1 到 30 个字符', trigger: 'blur'}
                     ]
                 },
-                listDataUrl: 'http://localhost:20122/api/sys/authority/listvo',
-                formInsertUrl: 'http://localhost:20122/api/sys/authority/insert',
-                formUpdateUrl: 'http://localhost:20122/api/sys/authority/update',
-                formRealDeleteUrl: 'http://localhost:20122/api/sys/authority/delete',
-                formLogicDeleteUrl: 'http://localhost:20122/api/sys/authority/logicdelete',
+                listDataUrl: bus.url.basePath + '/api/sys/authority/listvo',
+                formInsertUrl: bus.url.basePath + '/api/sys/authority/insert',
+                formUpdateUrl: bus.url.basePath + '/api/sys/authority/update',
+                formRealDeleteUrl: bus.url.basePath + '/api/sys/authority/delete',
+                formLogicDeleteUrl: bus.url.basePath + '/api/sys/authority/logicdelete',
                 tableData: [],
                 authProps:{
                     children: 'children',
                     label: 'name'
                 },
                 query: {
-                    'page.currentPage': 1
                 },
                 dataCount: 0,
                 form: {},
@@ -180,17 +178,12 @@
                     this.listType(),
                     this.getData()
             },
-            // 分页导航
-            handleCurrentChange(val) {
-                this.query['page.currentPage'] = val;
-                this.getData();
-            },
             getData() {
                 if (this.waitting) {
                     return;
                 }
                 this.waitting = true;
-                this.$http.get(bus.url.AuthorityList.listDataUrl, {params: this.query}).then((response) => {
+                this.$http.get(this.listDataUrl, {params: this.query}).then((response) => {
                     if (bus.commonResultSuccess(response, this.$router)) {
                         this.tableData = response.body.result;
                         this.dataCount = response.body.count;
@@ -254,7 +247,7 @@
                     this.waitting = true;
                     if (this.form.id && this.form.id > 0) {
                         //更新
-                        this.$http.post(bus.url.AuthorityList.formUpdateUrl, this.form).then((response) => {
+                        this.$http.post(this.formUpdateUrl, this.form).then((response) => {
                             if (bus.commonResultSuccess(response, this.$router)) {
                                 this.editVisible = false;
                                 this.waitting=false;
@@ -270,7 +263,7 @@
                             this.delayEndWaitting();
                         });
                     } else {
-                        this.$http.post(bus.url.AuthorityList.formInsertUrl, this.form).then((response) => {
+                        this.$http.post(this.formInsertUrl, this.form).then((response) => {
                             if (bus.commonResultSuccess(response, this.$router)) {
                                 this.editVisible = false;
                                 this.waitting=false;
@@ -295,9 +288,9 @@
                 }
                 var delUrl = '';
                 if (this.realDel) {
-                    delUrl = bus.url.AuthorityList.formRealDeleteUrl;
+                    delUrl = this.formRealDeleteUrl;
                 } else {
-                    delUrl = bus.url.AuthorityList.formLogicDeleteUrl
+                    delUrl = this.formLogicDeleteUrl
                 }
                 this.waitting = true;
                 this.$http.get(delUrl, {params: {id: this.delId}}).then((response) => {
@@ -322,7 +315,7 @@
                     return;
                 }
                 this.waitting = true;
-                this.$http.post(bus.url.AuthorityList.formUpdateUrl, this.tableData[idx]).then((response) => {
+                this.$http.post(this.formUpdateUrl, this.tableData[idx]).then((response) => {
                     if (bus.commonResultSuccess(response, this.$router)) {
                         this.$message.success(`更新成功`);
                         this.tableData[idx].updateVersion++;
