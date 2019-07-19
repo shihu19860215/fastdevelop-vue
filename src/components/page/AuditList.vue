@@ -1,0 +1,344 @@
+<template>
+    <div class="table">
+        <div class="container">
+            <div class="handle-box">
+                <el-input v-model="query.className" placeholder="类名" class="handle-input mr10" style="width:150px"></el-input>
+                <el-input v-model="query.fieldName" placeholder="字段名" class="handle-input mr10" style="width:150px"></el-input>
+                <el-input v-model="query.primaryKeyId" placeholder="主键id" class="handle-input mr10" style="width:150px"></el-input>
+                <el-input v-model="query.operatorId" placeholder="操作人" class="handle-input mr10" style="width:150px"></el-input>
+                <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
+                <el-button type="danger" icon="el-icon-delete" @click="clearQuery">清空</el-button>
+            </div>
+            <el-table :data="tableData" border class="table">
+                <el-table-column prop="className" label="类名" >
+                </el-table-column>
+                <el-table-column prop="fieldName" label="字段名" >
+                </el-table-column>
+                <el-table-column prop="primaryKeyId" label="主键id" >
+                </el-table-column>
+                <el-table-column prop="beforeValue" label="修改前值" >
+                </el-table-column>
+                <el-table-column prop="afterValue" label="修改后值" >
+                </el-table-column>
+                <el-table-column prop="operatorId" label="操作人" >
+                </el-table-column>
+                <el-table-column prop="comment" label="备注" >
+                </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="dataCount" :page-size="query['page.pageSize']">
+                </el-pagination>
+            </div>
+        </div>
+
+        <!-- 编辑弹出框 -->
+        <el-dialog title="编辑" :visible="editVisible" width="30%" :show-close=false>
+            <el-form ref="form" :model="form" label-width="80px" :rules="rules">
+                <el-form-item label="类名" prop="className">
+                    <el-input v-model="form.className"></el-input>
+                </el-form-item>
+                <el-form-item label="字段名" prop="fieldName">
+                    <el-input v-model="form.fieldName"></el-input>
+                </el-form-item>
+                <el-form-item label="主键id" prop="primaryKeyId">
+                    <el-input v-model="form.primaryKeyId"></el-input>
+                </el-form-item>
+                <el-form-item label="修改前值" prop="beforeValue">
+                    <el-input v-model="form.beforeValue"></el-input>
+                </el-form-item>
+                <el-form-item label="修改后值" prop="afterValue">
+                    <el-input v-model="form.afterValue"></el-input>
+                </el-form-item>
+                <el-form-item label="操作人" prop="operatorId">
+                    <el-input v-model="form.operatorId"></el-input>
+                </el-form-item>
+                <el-form-item label="备注" prop="comment">
+                    <el-input v-model="form.comment"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="handleEditClose">取 消</el-button>
+                <el-button type="primary" @click="saveEdit()">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <!-- 删除提示框 -->
+        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
+            <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="delVisible = false">取 消</el-button>
+                <el-button type="primary" @click="deleteRow">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+</template>
+
+<script>
+    import bus from '../common/bus';
+    export default {
+        data() {
+            return {
+                rules:{
+                    className:[
+                        { required: true, message: '请输入类名', trigger: 'blur' },
+                        { min: 1, max: 32, message: '长度在 1 到 32 个字符', trigger: 'blur' }
+                    ],
+                    fieldName:[
+                        { required: true, message: '请输入字段名', trigger: 'blur' },
+                        { min: 1, max: 32, message: '长度在 1 到 32 个字符', trigger: 'blur' }
+                    ],
+                    primaryKeyId:[
+                        { required: true, message: '请输入主键id', trigger: 'blur' },
+                        { min: 1, max: 19, message: '长度在 1 到 19 个字符', trigger: 'blur' }
+                    ],
+                    beforeValue:[
+                        { required: true, message: '请输入修改前值', trigger: 'blur' },
+                        { min: 1, max: 64, message: '长度在 1 到 64 个字符', trigger: 'blur' }
+                    ],
+                    afterValue:[
+                        { required: true, message: '请输入修改后值', trigger: 'blur' },
+                        { min: 1, max: 64, message: '长度在 1 到 64 个字符', trigger: 'blur' }
+                    ],
+                    operatorId:[
+                        { required: true, message: '请输入操作人', trigger: 'blur' },
+                        { min: 1, max: 19, message: '长度在 1 到 19 个字符', trigger: 'blur' }
+                    ],
+                    comment:[
+                        { required: true, message: '请输入备注', trigger: 'blur' },
+                        { min: 1, max: 512, message: '长度在 1 到 512 个字符', trigger: 'blur' }
+                    ],
+                },
+                listDataUrl: bus.url.basePath + '/api/sys/audit/listvo',
+                formInsertUrl: bus.url.basePath + '/api/sys/audit/insert',
+                formUpdateUrl: bus.url.basePath + '/api/sys/audit/update',
+                formRealDeleteUrl: bus.url.basePath + '/api/sys/audit/delete',
+                formLogicDeleteUrl: bus.url.basePath + '/api/sys/audit/logicdelete',
+                tableData: [],
+                query:{
+                    'page.currentPage':1,
+                    'page.pageSize' : 10
+                },
+                dataCount:0,
+                form:{},
+                editVisible: false,
+                delVisible: false,
+                delId: -1,
+                waitting: false,
+                realDel:false
+            }
+        },
+        mounted() {
+            this.init();
+        },
+        computed: {
+        },
+        methods: {
+            init(){
+                this.getData()
+            },
+            // 分页导航
+            handleCurrentChange(val) {
+                this.query['page.currentPage'] =val;
+                this.getData();
+            },
+            search(){
+                if(this.query.className == ''){
+                    delete this.query.className;
+                }
+                if(this.query.fieldName == ''){
+                    delete this.query.fieldName;
+                }
+                if(this.query.primaryKeyId == ''){
+                    delete this.query.primaryKeyId;
+                }
+                if(this.query.beforeValue == ''){
+                    delete this.query.beforeValue;
+                }
+                if(this.query.afterValue == ''){
+                    delete this.query.afterValue;
+                }
+                if(this.query.operatorId == ''){
+                    delete this.query.operatorId;
+                }
+                if(this.query.comment == ''){
+                    delete this.query.comment;
+                }
+                this.getData();
+            },
+            clearQuery(){
+                this.query = {
+                    'page.currentPage':1,
+                    'page.pageSize' : 10
+                };
+            },
+            getData() {
+                if(this.waitting){
+                    return;
+                }
+                this.waitting = true;
+                this.$http.get(this.listDataUrl,{params:this.query}).then((response) => {
+                    if(bus.commonResultSuccess(response,this.$router)){
+                        this.tableData = response.body.result;
+                        this.dataCount =  response.body.count;
+                    }
+                    this.delayEndWaitting();
+                }, (response) => {
+                    // 响应错误回调
+                    console.log(response);
+                    this.$message.error("服务器异常");
+                    this.delayEndWaitting();
+                });
+            },
+            delayEndWaitting(){
+                setTimeout(() =>{
+                    this.waitting = false;
+                },1000);
+            },
+            handleAdd() {
+                this.form = {};
+                this.editVisible = true;
+            },
+            handleEdit(index, row) {
+                this.form = JSON.parse(JSON.stringify(this.tableData[index]));
+                this.editVisible = true;
+            },
+            handleDelete(row, realDel) {
+                this.delId = row.id;
+                this.realDel = realDel;
+                this.delVisible = true;
+            },
+            handleEditClose(){
+                this.form = {};
+                this.$refs['form'].resetFields();
+                this.editVisible = false
+            },
+            // 保存编辑
+            saveEdit() {
+                this.$refs['form'].validate((valid) => {
+                    if (!valid) {
+                    return;
+                }
+                if(this.waitting){
+                    return;
+                }
+                this.waitting = true;
+                if(this.form.id && this.form.id>0){
+                    //更新
+                    this.$http.post(this.formUpdateUrl,this.form).then((response) => {
+                        if(bus.commonResultSuccess(response,this.$router)){
+                            this.editVisible = false;
+                            this.waitting = false;
+                            this.init();
+                            this.$message.success(`更新成功`);
+                        }else {
+                            this.delayEndWaitting();
+                        }
+                    }, (response) => {
+                            // 响应错误回调
+                            console.log(response);
+                            this.$message.error("服务器异常");
+                            this.delayEndWaitting();
+                    });
+                }else {
+                    this.$http.post(this.formInsertUrl,this.form).then((response) => {
+                        if(bus.commonResultSuccess(response,this.$router)){
+                            this.editVisible = false;
+                            this.waitting = false;
+                            this.init();
+                            this.$message.success(`添加成功`);
+                        }else {
+                            this.delayEndWaitting();
+                        }
+                    }, (response) => {
+                        // 响应错误回调
+                        console.log(response);
+                        this.$message.error("服务器异常");
+                        this.delayEndWaitting();
+                    });
+                }
+            });
+            },
+            // 确定删除
+            deleteRow(){
+                if(this.waitting){
+                    return;
+                }
+                var delUrl = '';
+                if(this.realDel){
+                    delUrl = this.formRealDeleteUrl;
+                }else {
+                    delUrl = this.formLogicDeleteUrl
+                }
+                this.waitting = true;
+                this.$http.get(delUrl,{params:{id:this.delId}}).then((response) => {
+                    if(bus.commonResultSuccess(response,this.$router)){
+                        this.waitting = false;
+                        this.init();
+                        this.$message.success('删除成功');
+                    }else {
+                        this.delayEndWaitting();
+                    }
+                }, (response) => {
+                    // 响应错误回调
+                    console.log(response);
+                    this.$message.error("服务器异常");
+                    this.delayEndWaitting();
+                });
+                this.delVisible = false;
+            },
+            startStop(idx){
+                if(this.waitting){
+                    this.tableData[idx].status =this.tableData[idx].status^1;
+                    return;
+                }
+                this.waitting = true;
+                this.$http.post(this.formUpdateUrl,this.tableData[idx]).then((response) => {
+                    if(bus.commonResultSuccess(response,this.$router)){
+                        this.$message.success(`更新成功`);
+                        this.tableData[idx].updateVersion ++;
+                    }else {
+                        this.tableData[idx].status =this.tableData[idx].status^1;
+                    }
+                    this.delayEndWaitting();
+                }, (response) => {
+                    // 响应错误回调
+                    console.log(response);
+                    this.$message.error('系统异常');
+                    this.tableData[idx].status =this.tableData[idx].status^1;
+                    this.delayEndWaitting();
+                });
+            }
+        },
+        props:["home"]
+    }
+
+</script>
+
+<style scoped>
+    .handle-box {
+        margin-bottom: 20px;
+    }
+
+    .handle-select {
+        width: 120px;
+    }
+
+    .handle-input {
+        width: 300px;
+        display: inline-block;
+    }
+    .del-dialog-cnt{
+        font-size: 16px;
+        text-align: center
+    }
+    .table{
+        width: 100%;
+        font-size: 14px;
+    }
+    .red{
+        color: #ff0000;
+    }
+    .mr10{
+        margin-right: 10px;
+    }
+</style>
