@@ -6,7 +6,7 @@ const bus = new Vue({
         url:{
             basePath: 'http://localhost:20122',
             sys:{
-                dictUrl:'http://localhost:20122/api/sys/columndict/list'
+                dictUrl:'http://localhost:20122/api/sys/columninfo/getbytablecolumnname'
             }
         }
     },

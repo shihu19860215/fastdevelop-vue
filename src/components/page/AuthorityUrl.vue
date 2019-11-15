@@ -55,7 +55,7 @@
                 </el-form-item>
                 <el-form-item label="权限类型" prop="linkAuth">
                     <el-col>
-                        <el-radio v-for="(item,index) in linkAuthList" v-model="form.linkAuth" :label="item.databaseValue">{{item.meaning}}</el-radio>
+                        <el-radio v-for="(item,index) in linkAuthList" v-model="form.linkAuth" :label="item.value">{{item.meaning}}</el-radio>
                     </el-col>
                 </el-form-item>
             </el-form>
@@ -147,7 +147,7 @@
                 };
                 this.$http.get(bus.url.sys.dictUrl, {params:parm}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
-                        this.linkAuthList = response.body.result;
+                        this.linkAuthList = response.body.result.columnDictPOList;
                     }
                 }, (response) => {
                     // 响应错误回调

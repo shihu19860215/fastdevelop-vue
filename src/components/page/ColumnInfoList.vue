@@ -7,20 +7,18 @@
         </div>
         <div class="container">
             <div class="handle-box">
-                <el-input v-model="query.columnId" placeholder="字段id" class="handle-input mr10" style="width:150px"></el-input>
-                <el-select  v-model="query.value"  placeholder="数据库值"  class="mr10" clearable="true" style="width:150px">
-                    <el-option v-for="item in valueList" :key="item.id" :label="item.title" value="item.id"></el-option>
-                </el-select>
-                <el-input v-model="query.meaning" placeholder="实际意思" class="handle-input mr10" style="width:150px"></el-input>
+                <el-input v-model="query.tableName" placeholder="表名" class="handle-input mr10" style="width:150px"></el-input>
+                <el-input v-model="query.columnName" placeholder="字段名" class="handle-input mr10" style="width:150px"></el-input>
+                <el-input v-model="query.title" placeholder="标题" class="handle-input mr10" style="width:150px"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
                 <el-button type="danger" icon="el-icon-delete" @click="clearQuery">清空</el-button>
             </div>
             <el-table :data="tableData" border class="table">
-                <el-table-column prop="columnId" label="字段id" >
+                <el-table-column prop="tableName" label="表名" >
                 </el-table-column>
-                <el-table-column prop="value" label="数据库值" >
+                <el-table-column prop="columnName" label="字段名" >
                 </el-table-column>
-                <el-table-column prop="meaning" label="实际意思" >
+                <el-table-column prop="title" label="标题" >
                 </el-table-column>
                 <el-table-column label="启用禁用" align="center" v-if="home.user.authIds.indexOf('1') >= 0">
                     <template slot-scope="scope">
@@ -44,16 +42,14 @@
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" :visible="editVisible" width="30%" :show-close=false>
             <el-form ref="form" :model="form" label-width="80px" :rules="rules">
-                <el-form-item label="字段id" prop="columnId">
-                    <el-input v-model="form.columnId"></el-input>
+                <el-form-item label="表名" prop="tableName">
+                    <el-input v-model="form.tableName"></el-input>
                 </el-form-item>
-                <el-form-item label="数据库值" prop="value">
-                    <el-col>
-                        <el-radio v-for="(item,index) in valueList" v-model="form.value" :label="item.value">{{item.meaning}}</el-radio>
-                    </el-col>
+                <el-form-item label="字段名" prop="columnName">
+                    <el-input v-model="form.columnName"></el-input>
                 </el-form-item>
-                <el-form-item label="实际意思" prop="meaning">
-                    <el-input v-model="form.meaning"></el-input>
+                <el-form-item label="标题" prop="title">
+                    <el-input v-model="form.title"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -80,24 +76,24 @@
         data() {
             return {
                 rules:{
-                    columnId:[
-                        { required: true, message: '请输入字段id', trigger: 'blur' },
-                        { min: 1, max: 19, message: '长度在 1 到 19 个字符', trigger: 'blur' }
+                    tableName:[
+                        { required: true, message: '请输入表名', trigger: 'blur' },
+                        { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
                     ],
-                    value:[
-                        { required: true, message: '请选择数据库值', trigger: 'blur' },
+                    columnName:[
+                        { required: true, message: '请输入字段名', trigger: 'blur' },
+                        { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
                     ],
-                    meaning:[
-                        { required: true, message: '请输入实际意思', trigger: 'blur' },
+                    title:[
+                        { required: true, message: '请输入标题', trigger: 'blur' },
                         { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
                     ],
                 },
-                listDataUrl: bus.url.basePath + '/api/sys/columndict/listvo',
-                formInsertUrl: bus.url.basePath + '/api/sys/columndict/insert',
-                formUpdateUrl: bus.url.basePath + '/api/sys/columndict/update',
-                formRealDeleteUrl: bus.url.basePath + '/api/sys/columndict/delete',
-                formLogicDeleteUrl: bus.url.basePath + '/api/sys/columndict/logicdelete',
-                columnInfoDataUrl: bus.url.basePath + '/api/sys/columninfo/list',
+                listDataUrl: bus.url.basePath + '/api/sys/columninfo/listvo',
+                formInsertUrl: bus.url.basePath + '/api/sys/columninfo/insert',
+                formUpdateUrl: bus.url.basePath + '/api/sys/columninfo/update',
+                formRealDeleteUrl: bus.url.basePath + '/api/sys/columninfo/delete',
+                formLogicDeleteUrl: bus.url.basePath + '/api/sys/columninfo/logicdelete',
                 tableData: [],
                 query:{
                     'page.currentPage':1,
@@ -105,7 +101,6 @@
                 },
                 dataCount:0,
                 form:{},
-                valueList:[],
                 editVisible: false,
                 delVisible: false,
                 delId: -1,
@@ -119,19 +114,7 @@
         computed: {
         },
         methods: {
-            listValue(){
-                this.$http.get(bus.url.sys.columnInfoDataUrl, {params:parm}).then((response) => {
-                    if(bus.commonResultSuccess(response,this.$router)){
-                        this.valueList = response.body.result;
-                    }
-                }, (response) => {
-                    // 响应错误回调
-                    console.log(response);
-                    this.$message.error("服务器异常");
-                });
-            },
             init(){
-                this.listValue();
                 this.getData()
             },
             // 分页导航
@@ -140,14 +123,14 @@
                 this.getData();
             },
             search(){
-                if(this.query.columnId == ''){
-                    delete this.query.columnId;
+                if(this.query.tableName == ''){
+                    delete this.query.tableName;
                 }
-                if(this.query.value == ''){
-                    delete this.query.value;
+                if(this.query.columnName == ''){
+                    delete this.query.columnName;
                 }
-                if(this.query.meaning == ''){
-                    delete this.query.meaning;
+                if(this.query.title == ''){
+                    delete this.query.title;
                 }
                 this.getData();
             },

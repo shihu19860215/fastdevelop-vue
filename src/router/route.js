@@ -24,7 +24,12 @@ export default new VueRouter({
                     meta: { title: '区域列表' }
                 },
                 {
-                    path: '/columndictlist',
+                    path: '/columnInfoList',
+                    component: resolve => require(['../components/page/ColumnInfoList.vue'], resolve),
+                    meta: { title: '字段字典列表' }
+                },
+                {
+                    path: '/columnDictList',
                     component: resolve => require(['../components/page/ColumnDictList.vue'], resolve),
                     meta: { title: '字段字典列表' }
                 },

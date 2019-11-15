@@ -68,7 +68,7 @@
                 </el-form-item>
                 <el-form-item label="类型" prop="type">
                     <el-col>
-                        <el-radio v-for="(item,index) in typeList" v-model="form.type" :label="item.databaseValue">{{item.meaning}}</el-radio>
+                        <el-radio v-for="(item,index) in typeList" v-model="form.type" :label="item.value">{{item.meaning}}</el-radio>
                     </el-col>
                 </el-form-item>
                 <el-form-item label="状态" prop="status">
@@ -184,7 +184,7 @@
                 };
                 this.$http.get(bus.url.sys.dictUrl, {params:parm}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
-                        this.typeList = response.body.result;
+                        this.typeList = response.body.result.columnDictPOList;
                     }
                 }, (response) => {
                     // 响应错误回调
