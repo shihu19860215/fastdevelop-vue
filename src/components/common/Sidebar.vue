@@ -3,13 +3,13 @@
         <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
                  text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
             <template v-for="item in home.user.menuList">
-                <template v-if="item.children">
+                <template v-if="item.children.length>0">
                     <el-submenu :index="item.code" :key="item.code">
                         <template slot="title">
                             <i :class="item.icon"></i><span slot="title">{{ item.name }}</span>
                         </template>
                         <template v-for="subItem in item.children">
-                            <el-submenu v-if="subItem.children" :index="subItem.code" :key="subItem.code">
+                            <el-submenu v-if="subItem.children.length>0" :index="subItem.code" :key="subItem.code">
                                 <template slot="title">{{ subItem.name }}</template>
                                 <el-menu-item v-for="(threeItem,i) in subItem.children" :key="i" :index="threeItem.code">
                                     {{ threeItem.name }}

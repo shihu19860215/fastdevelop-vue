@@ -82,11 +82,11 @@
                         { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
                     ]
                 },
-                roleListUrl: bus.url.basePath + '/api/sys/role/list',
-                tableDataUrl: bus.url.basePath + '/api/sys/user/listvo',
-                formInsertUrl: bus.url.basePath + '/api/sys/user/insertuservo',
-                formUpdateUrl: bus.url.basePath + '/api/sys/user/updateuservo',
-                formDeleteUrl: bus.url.basePath + '/api/sys/user/delete',
+                roleListUrl: bus.getSysBaseUrl() + '/role/list',
+                tableDataUrl: bus.getSysBaseUrl() + '/user/listvo',
+                formInsertUrl: bus.getSysBaseUrl() + '/user/insertuservo',
+                formUpdateUrl: bus.getSysBaseUrl() + '/user/updateuservo',
+                formDeleteUrl: bus.getSysBaseUrl() + '/user/delete',
                 roleList:[],
                 value1:true,
                 tableData: [],

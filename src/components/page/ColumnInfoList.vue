@@ -89,11 +89,11 @@
                         { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
                     ],
                 },
-                listDataUrl: bus.url.basePath + '/api/sys/columninfo/listvo',
-                formInsertUrl: bus.url.basePath + '/api/sys/columninfo/insert',
-                formUpdateUrl: bus.url.basePath + '/api/sys/columninfo/update',
-                formRealDeleteUrl: bus.url.basePath + '/api/sys/columninfo/delete',
-                formLogicDeleteUrl: bus.url.basePath + '/api/sys/columninfo/logicdelete',
+                listDataUrl: bus.getSysBaseUrl() + '/columninfo/listvo',
+                formInsertUrl: bus.getSysBaseUrl() + '/columninfo/insert',
+                formUpdateUrl: bus.getSysBaseUrl() + '/columninfo/update',
+                formRealDeleteUrl: bus.getSysBaseUrl() + '/columninfo/delete',
+                formLogicDeleteUrl: bus.getSysBaseUrl() + '/columninfo/logicdelete',
                 tableData: [],
                 query:{
                     'page.currentPage':1,

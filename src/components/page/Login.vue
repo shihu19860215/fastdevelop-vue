@@ -27,7 +27,7 @@
     export default {
         data: function(){
             return {
-                loginUrl: bus.url.basePath + "/api/sys/login/login",
+                loginUrl: bus.url.basePath + "/login",
                 ruleForm: {
                     username: 'shihu',
                     password: '123456'
@@ -53,6 +53,7 @@
                         }
                         this.waitting = true;
                         this.$http.get(this.loginUrl,{params:this.ruleForm}).then((response) => {
+                            console.log(response);
                             if(bus.commonResultSuccess(response,this.$router)){
                                 localStorage.setItem('is_login',true);
                                 this.waitting = false;

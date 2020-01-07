@@ -93,12 +93,12 @@
                         { required: true, message: '请选择连接权限', trigger: 'blur' },
                     ]
                 },
-                listDataUrl: bus.url.basePath + '/api/sys/authorityurl/listvo',
-                formInsertUrl: bus.url.basePath + '/api/sys/authorityurl/insert',
-                formUpdateUrl: bus.url.basePath + '/api/sys/authorityurl/update',
-                formRealDeleteUrl: bus.url.basePath + '/api/sys/authorityurl/delete',
-                formLogicDeleteUrl: bus.url.basePath + '/api/sys/authorityurl/logicdelete',
-                authorityListDataUrl: bus.url.basePath + '/api/sys/authority/listvo',
+                listDataUrl: bus.getSysBaseUrl() + '/authorityurl/listvo',
+                formInsertUrl: bus.getSysBaseUrl() + '/authorityurl/insert',
+                formUpdateUrl: bus.getSysBaseUrl() + '/authorityurl/update',
+                formRealDeleteUrl: bus.getSysBaseUrl() + '/authorityurl/delete',
+                formLogicDeleteUrl: bus.getSysBaseUrl() + '/authorityurl/logicdelete',
+                authorityListDataUrl: bus.getSysBaseUrl() + '/authority/listvo',
                 tableData: [],
                 authUrlTable:[],
                 checkAuthorityName : "通用权限",
@@ -107,7 +107,9 @@
                     children: 'children',
                     label: 'name'
                 },
-                query: {
+                query:{
+                    'currentPage':1,
+                    'pageSize' : 10000
                 },
                 form: {},
                 editVisible: false,
@@ -145,7 +147,7 @@
                     columnName:'link_auth',
                     status:1
                 };
-                this.$http.get(bus.url.sys.dictUrl, {params:parm}).then((response) => {
+                this.$http.get(bus.getDictUrl(), {params:parm}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.linkAuthList = response.body.result.columnDictPOList;
                     }

@@ -122,17 +122,19 @@
                         {min: 1, max: 30, message: '长度在 1 到 30 个字符', trigger: 'blur'}
                     ]
                 },
-                listDataUrl: bus.url.basePath + '/api/sys/authority/listvo',
-                formInsertUrl: bus.url.basePath + '/api/sys/authority/insert',
-                formUpdateUrl: bus.url.basePath + '/api/sys/authority/update',
-                formRealDeleteUrl: bus.url.basePath + '/api/sys/authority/delete',
-                formLogicDeleteUrl: bus.url.basePath + '/api/sys/authority/logicdelete',
+                listDataUrl: bus.getSysBaseUrl() + '/authority/listvo',
+                formInsertUrl: bus.getSysBaseUrl() + '/authority/insert',
+                formUpdateUrl: bus.getSysBaseUrl() + '/authority/update',
+                formRealDeleteUrl: bus.getSysBaseUrl() + '/authority/delete',
+                formLogicDeleteUrl: bus.getSysBaseUrl() + '/authority/logicdelete',
                 tableData: [],
                 authProps:{
                     children: 'children',
                     label: 'name'
                 },
-                query: {
+                query:{
+                    'currentPage':1,
+                    'pageSize' : 10000
                 },
                 dataCount: 0,
                 form: {},
@@ -164,7 +166,7 @@
                     tableName: 'sys_authority',
                     columnName: 'type'
                 };
-                this.$http.get(bus.url.sys.dictUrl, {params: parm}).then((response) => {
+                this.$http.get(bus.getDictUrl(), {params: parm}).then((response) => {
                     if (bus.commonResultSuccess(response, this.$router)) {
                         this.typeList = response.body.result.columnDictPOList;
                     }

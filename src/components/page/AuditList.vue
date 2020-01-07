@@ -108,11 +108,11 @@
                         { min: 1, max: 512, message: '长度在 1 到 512 个字符', trigger: 'blur' }
                     ],
                 },
-                listDataUrl: bus.url.basePath + '/api/sys/audit/listvo',
-                formInsertUrl: bus.url.basePath + '/api/sys/audit/insert',
-                formUpdateUrl: bus.url.basePath + '/api/sys/audit/update',
-                formRealDeleteUrl: bus.url.basePath + '/api/sys/audit/delete',
-                formLogicDeleteUrl: bus.url.basePath + '/api/sys/audit/logicdelete',
+                listDataUrl: bus.getSysBaseUrl() + '/audit/listvo',
+                formInsertUrl: bus.getSysBaseUrl() + '/audit/insert',
+                formUpdateUrl: bus.getSysBaseUrl() + '/audit/update',
+                formRealDeleteUrl: bus.getSysBaseUrl() + '/audit/delete',
+                formLogicDeleteUrl: bus.getSysBaseUrl() + '/audit/logicdelete',
                 tableData: [],
                 query:{
                     'page.currentPage':1,

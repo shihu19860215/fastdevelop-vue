@@ -24,8 +24,9 @@
     export default {
         data(){
             return {
-                userAuthUrl:bus.url.basePath + "/api/sys/user/getUserInfo",
+                userAuthUrl: bus.getUserInfoUrl(),
                 tagsList: [],
+                temp:1,
                 collapse: false,
                 user:{
                     authIds:[],

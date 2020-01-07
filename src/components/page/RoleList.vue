@@ -66,11 +66,11 @@
                         { min: 1, max: 10, message: '长度在 1 到 10 个字符', trigger: 'blur' }
                     ]
                 },
-                listDataUrl: bus.url.basePath + '/api/sys/role/listvo',
-                formInsertUrl: bus.url.basePath + '/api/sys/role/insert',
-                formUpdateUrl: bus.url.basePath + '/api/sys/role/update',
-                formRealDeleteUrl: bus.url.basePath + '/api/sys/role/delete',
-                formLogicDeleteUrl: bus.url.basePath + '/api/sys/role/logicdelete',
+                listDataUrl: bus.getSysBaseUrl() + '/role/listvo',
+                formInsertUrl: bus.getSysBaseUrl() + '/role/insert',
+                formUpdateUrl: bus.getSysBaseUrl() + '/role/update',
+                formRealDeleteUrl: bus.getSysBaseUrl() + '/role/delete',
+                formLogicDeleteUrl: bus.getSysBaseUrl() + '/role/logicdelete',
                 tableData: [],
                 query:{
                     'page.currentPage':1

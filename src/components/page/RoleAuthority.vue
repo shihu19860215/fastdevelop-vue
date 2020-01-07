@@ -31,9 +31,9 @@
         data() {
             return {
                 tableData: [],
-                tableDataUrl: bus.url.basePath + '/api/sys/role/listvo',
-                authListUrl: bus.url.basePath + '/api/sys/authority/listvo',
-                roleAuthUpdateUrl: bus.url.basePath + '/api/sys/roleauthoritymapping/updateroleauth',
+                tableDataUrl: bus.getSysBaseUrl() + '/role/listvo',
+                authListUrl: bus.getSysBaseUrl() + '/authority/listvo',
+                roleAuthUpdateUrl: bus.getSysBaseUrl() + '/roleauthoritymapping/updateroleauth',
                 authList:[],
                 authProps:{
                     children: 'children',

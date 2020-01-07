@@ -92,16 +92,16 @@
                         { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
                     ],
                 },
-                listDataUrl: bus.url.basePath + '/api/sys/columndict/listvo',
-                formInsertUrl: bus.url.basePath + '/api/sys/columndict/insert',
-                formUpdateUrl: bus.url.basePath + '/api/sys/columndict/update',
-                formRealDeleteUrl: bus.url.basePath + '/api/sys/columndict/delete',
-                formLogicDeleteUrl: bus.url.basePath + '/api/sys/columndict/logicdelete',
-                columnInfoDataUrl: bus.url.basePath + '/api/sys/columninfo/list',
+                listDataUrl: bus.getSysBaseUrl() + '/columndict/listvo',
+                formInsertUrl: bus.getSysBaseUrl() + '/columndict/insert',
+                formUpdateUrl: bus.getSysBaseUrl() + '/columndict/update',
+                formRealDeleteUrl: bus.getSysBaseUrl() + '/columndict/delete',
+                formLogicDeleteUrl: bus.getSysBaseUrl() + '/columndict/logicdelete',
+                columnInfoDataUrl: bus.getSysBaseUrl() + '/columninfo/list',
                 tableData: [],
                 query:{
-                    'page.currentPage':1,
-                    'page.pageSize' : 10
+                    'currentPage':1,
+                    'pageSize' : 10
                 },
                 dataCount:0,
                 form:{},
@@ -120,7 +120,7 @@
         },
         methods: {
             listValue(){
-                this.$http.get(bus.url.sys.columnInfoDataUrl, {params:parm}).then((response) => {
+                this.$http.get(this.columnInfoDataUrl, {params:{pageSize:10000}}).then((response) => {
                     if(bus.commonResultSuccess(response,this.$router)){
                         this.valueList = response.body.result;
                     }
@@ -153,8 +153,8 @@
             },
             clearQuery(){
                 this.query = {
-                    'page.currentPage':1,
-                    'page.pageSize' : 10
+                    'currentPage':1,
+                    'pageSize' : 10
                 };
             },
             getData() {

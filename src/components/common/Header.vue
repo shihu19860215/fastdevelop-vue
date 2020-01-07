@@ -48,7 +48,7 @@
     export default {
         data() {
             return {
-                loginOutUrl:bus.url.basePath + "/api/sys/login/loginout",
+                loginOutUrl:bus.url.basePath + "/loginout",
                 collapse: false,
                 fullscreen: false,
                 name: 'linxin',
